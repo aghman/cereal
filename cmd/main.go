@@ -11,11 +11,13 @@ import (
 	"go.bug.st/serial/enumerator"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
 )
 
 type DataLineHandler func(string) error
 
 var influxClient influxdb2.Client
+var writeAPI api.WriteAPI
 var portToUse string
 
 func main() {
@@ -28,6 +30,7 @@ func main() {
 	influxClient = influxdb2.NewClient("http://es:8086", token)
 	// always close client at the end
 	defer influxClient.Close()
+	writeAPI = influxClient.WriteAPI(org, bucket)
 
 	mode := &serial.Mode{
 		BaudRate: 9600,
@@ -146,6 +149,18 @@ func HandleParticleData(dataLine string) error {
 	currentData.PC_7_5, _ = strconv.ParseInt(dataComponents[7], 0, 0)
 	currentData.PC_10, _ = strconv.ParseInt(dataComponents[8], 0, 0)
 	//fmt.Print(currentData)
+	// write line protocol
+	writeAPI.WriteRecord(fmt.Sprintf("pm1.0,unit=ugm3 sensor=%f", currentData.PM_1_0))
+	writeAPI.WriteRecord(fmt.Sprintf("pm2.5,unit=ugm3 sensor=%f", currentData.PM_2_5))
+	writeAPI.WriteRecord(fmt.Sprintf("pm10,unit=ugm3 sensor=%f", currentData.PM_10))
+	writeAPI.WriteRecord(fmt.Sprintf("pc0.5,unit=particles count=%d", currentData.PC_0_5))
+	writeAPI.WriteRecord(fmt.Sprintf("pc1.0,unit=particles count=%d", currentData.PC_1))
+	writeAPI.WriteRecord(fmt.Sprintf("pc2.5,unit=particles count=%d", currentData.PC_2_5))
+	writeAPI.WriteRecord(fmt.Sprintf("pc5.0,unit=particles count=%d", currentData.PC_5))
+	writeAPI.WriteRecord(fmt.Sprintf("pc7.5,unit=particles count=%d", currentData.PC_7_5))
+	writeAPI.WriteRecord(fmt.Sprintf("pc10,unit=particles count=%d", currentData.PC_10))
+	// Flush writes
+	writeAPI.Flush()
 
 	return nil
 }
