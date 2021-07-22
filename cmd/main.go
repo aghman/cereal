@@ -9,13 +9,26 @@ import (
 
 	"go.bug.st/serial"
 	"go.bug.st/serial/enumerator"
+
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 )
 
 type DataLineHandler func(string) error
 
+var influxClient influxdb2.Client
+var portToUse string
+
 func main() {
 
-	var portToUse string = ""
+	// You can generate a Token from the "Tokens Tab" in the UI
+	const token = "hEwSGkJMW1Nua6jfNL3q63IlUB2hgUWjfcorFQsw9cwUbKSepzwbZUgLgj3uSAz2oQXxHMcra61gWf2PT1DBgA=="
+	const bucket = "garden"
+	const org = "home"
+
+	influxClient = influxdb2.NewClient("http://es:8086", token)
+	// always close client at the end
+	defer influxClient.Close()
+
 	mode := &serial.Mode{
 		BaudRate: 9600,
 	}
