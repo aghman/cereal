@@ -1,3 +1,4 @@
+
 /*
   Reading 1.0 to 10um sized particulate matter from the Panasonic SN-GCJA5
   By: Nathan Seidle
@@ -26,8 +27,13 @@
 #include <Wire.h>
 
 #include "SparkFun_Particle_Sensor_SN-GCJA5_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_Particle_SN-GCJA5
-SFE_PARTICLE_SENSOR myAirSensor;
+#include <Adafruit_AHTX0.h>
 
+SFE_PARTICLE_SENSOR myAirSensor;
+Adafruit_AHTX0 aht;
+Adafruit_Sensor *aht_humidity, *aht_temp;
+bool hasTemp = false;
+bool hasAir = false;
 
 void setup()
 {
@@ -38,53 +44,80 @@ void setup()
 
   if (myAirSensor.begin() == false)
   {
-    Serial.println("The particle sensor did not respond. Please check wiring. Freezing...");
-    while (1)
-      ;
+    Serial.println("The particle sensor did not respond. Please check wiring.");
+  } else{
+    hasAir = true;
+    Serial.println("Sensor started");
+    Serial.println("PM:1.0, 2.5, 10, Counts: 0.5, 1, 2.5, 5, 7.5, 10,");
   }
 
-  Serial.println("Sensor started");
-  Serial.println("PM:1.0, 2.5, 10, Counts: 0.5, 1, 2.5, 5, 7.5, 10,");
+  if (!aht.begin()) {
+    Serial.println("Failed to find AHT10/AHT20 chip");
+  } else{
+    hasTemp = true;
+    Serial.println("AHT10/AHT20 Found!");
+    aht_temp = aht.getTemperatureSensor();
+    aht_temp->printSensorDetails();
+    
+    aht_humidity = aht.getHumiditySensor();
+    aht_humidity->printSensorDetails();
+  }
 }
+ 
+
+  
 
 void loop()
 {
-  float pm1_0 = myAirSensor.getPM1_0();
-  Serial.print(pm1_0, 2); //Print float with 2 decimals
-  Serial.print(",");
-
-  float pm2_5 = myAirSensor.getPM2_5();
-  Serial.print(pm2_5, 2);
-  Serial.print(",");
-
-  float pm10 = myAirSensor.getPM10();
-  Serial.print(pm10, 2);
-  Serial.print(",");
-
-  unsigned int pc0_5 = myAirSensor.getPC0_5();
-  Serial.print(pc0_5);
-  Serial.print(",");
-
-  unsigned int pc1_0 = myAirSensor.getPC1_0();
-  Serial.print(pc1_0);
-  Serial.print(",");
-
-  unsigned int pc2_5 = myAirSensor.getPC2_5();
-  Serial.print(pc2_5);
-  Serial.print(",");
-
-  unsigned int pc5_0 = myAirSensor.getPC5_0();
-  Serial.print(pc5_0);
-  Serial.print(",");
-
-  unsigned int pc7_5 = myAirSensor.getPC7_5();
-  Serial.print(pc7_5);
-  Serial.print(",");
-
-  unsigned int pc10 = myAirSensor.getPC10();
-  Serial.print(pc10);
-  Serial.print(",");
+  if (hasAir){ 
+    float pm1_0 = myAirSensor.getPM1_0();
+    Serial.print(pm1_0, 2); //Print float with 2 decimals
+    Serial.print(",");
   
+    float pm2_5 = myAirSensor.getPM2_5();
+    Serial.print(pm2_5, 2);
+    Serial.print(",");
+  
+    float pm10 = myAirSensor.getPM10();
+    Serial.print(pm10, 2);
+    Serial.print(",");
+  
+    unsigned int pc0_5 = myAirSensor.getPC0_5();
+    Serial.print(pc0_5);
+    Serial.print(",");
+  
+    unsigned int pc1_0 = myAirSensor.getPC1_0();
+    Serial.print(pc1_0);
+    Serial.print(",");
+  
+    unsigned int pc2_5 = myAirSensor.getPC2_5();
+    Serial.print(pc2_5);
+    Serial.print(",");
+  
+    unsigned int pc5_0 = myAirSensor.getPC5_0();
+    Serial.print(pc5_0);
+    Serial.print(",");
+  
+    unsigned int pc7_5 = myAirSensor.getPC7_5();
+    Serial.print(pc7_5);
+    Serial.print(",");
+  
+    unsigned int pc10 = myAirSensor.getPC10();
+    Serial.print(pc10);
+    Serial.print(",");
+  }
+  if (hasTemp){
+    //  /* Get a new normalized sensor event */
+    sensors_event_t humidity;
+    sensors_event_t temp;
+    aht_humidity->getEvent(&humidity);
+    aht_temp->getEvent(&temp);
+  
+    Serial.print(temp.temperature);
+    Serial.print(",");
+    Serial.print(humidity.relative_humidity);
+    Serial.print(",");
+  }
 
   Serial.println();
 
