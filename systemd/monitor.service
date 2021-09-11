@@ -1,0 +1,12 @@
+[Unit]
+Description=Serial monitoring service that parses air quality data and writes to influxdb
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/gbparticle_linux_arm
+
+[Install]
+WantedBy=multi-user.target
