@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -12,7 +12,21 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/spf13/cobra"
 )
+
+func init() {
+	rootCmd.AddCommand(monitorCmd)
+}
+
+var monitorCmd = &cobra.Command{
+	Use:   "monitor",
+	Short: "Starts monitoring of serial port",
+	Long:  `Starts monitoring of serial port`,
+	Run: func(cmd *cobra.Command, args []string) {
+		run()
+	},
+}
 
 type DataLineHandler func(string) error
 
@@ -20,7 +34,7 @@ var influxClient influxdb2.Client
 var writeAPI api.WriteAPI
 var portToUse string
 
-func main() {
+func run() {
 
 	// You can generate a Token from the "Tokens Tab" in the UI
 	const token = "hEwSGkJMW1Nua6jfNL3q63IlUB2hgUWjfcorFQsw9cwUbKSepzwbZUgLgj3uSAz2oQXxHMcra61gWf2PT1DBgA=="
@@ -45,7 +59,6 @@ func main() {
 		return
 	}
 	for _, port := range ports {
-		//fmt.Printf("Found port: %s\n", port.Name)
 		if port.IsUSB {
 			fmt.Printf("Found USB Port at %s, using for serial scanning. \n", port.Name)
 			portToUse = port.Name
@@ -103,6 +116,7 @@ func main() {
 }
 
 const expectedParticleDataElements = 9
+const expectedCombinedDataElements = 11
 
 type PanasonicSNGCJA5Data struct {
 	PM_1_0 float64

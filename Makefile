@@ -14,8 +14,8 @@ setup:
 build: build_arm build_arm64 build_darwin_arm64
 
 build_arm:
-	GOOS=linux GOARCH=arm go build -o build/gbparticle_linux_arm cmd/main.go 
+	GOOS=linux GOARCH=arm go build -o build/linux/arm/cereal main.go 
 build_arm64:
-	GOOS=linux GOARCH=arm64 go build -o build/gbparticle_linux_arm64 cmd/main.go
+	GOOS=linux GOARCH=arm64 go build -o build/linux/arm64/cereal main.go
 build_darwin_arm64:
-	GOOS=darwin GOARCH=arm64 go build -o build/gbparticle_darwin_arm64 cmd/main.go
+	GOOS=darwin GOARCH=arm64 go build -o build/darwin/arm64/cereal main.go
