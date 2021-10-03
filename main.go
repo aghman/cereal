@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/aghman/gbparticle/cmd"
+	"github.com/aghman/cereal/cmd"
 )
 
 func main() {

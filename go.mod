@@ -1,6 +1,6 @@
-module github.com/aghman/gbparticle
+module github.com/aghman/cereal
 
-go 1.15
+go 1.16
 
 require (
 	github.com/influxdata/influxdb-client-go/v2 v2.4.0
