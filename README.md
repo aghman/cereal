@@ -1,2 +1,4 @@
-# gardenbase-particle
-Particulate matter sensor reporting
+# cereal
+Command-line serial monitoring application
+
+
