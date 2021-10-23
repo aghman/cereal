@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -34,14 +33,11 @@ func init() {
 func initConfig() {
 	if cfgFile != "" {
 		// Use config file from the flag.
+		fmt.Printf("Attempting to use config file: %s\n", cfgFile)
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := os.UserHomeDir()
-		cobra.CheckErr(err)
-
-		// Search config in home directory with name ".cereal" (without extension).
-		viper.AddConfigPath(home)
+		// Search config in current directory with name ".cereal" (without extension).
+		viper.AddConfigPath(".")
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(".cereal")
 	}

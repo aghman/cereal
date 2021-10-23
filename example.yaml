@@ -1,0 +1,8 @@
+location:
+  name: near_pond
+  serialport: /dev/usb01
+  output_file: /var/log/cereal.out
+  tags:
+    - airquality
+    - yard
+    - outdoors
