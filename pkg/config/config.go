@@ -28,7 +28,10 @@ func NewCerealConfig(input map[string]interface{}) *CerealConfig {
 	var newConfig CerealConfig
 	newConfig.Location.Name = input["name"].(string)
 	newConfig.Location.SerialPort = input["serialport"].(string)
-	newConfig.Location.OutputFile = input["outputfile"].(string)
+	newConfig.Location.OutputFile = input["output_file"].(string)
+	for _, val := range input["tags"].([]interface{}) {
+		newConfig.Location.Tags = append(newConfig.Location.Tags, val.(string))
+	}
 
 	return &newConfig
 }
