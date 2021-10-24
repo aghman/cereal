@@ -38,7 +38,7 @@ func run() {
 	runningConfig = *config.NewCerealConfig(location.(map[string]interface{}))
 	fmt.Println(runningConfig)
 	mode := &serial.Mode{
-		BaudRate: 9600,
+		BaudRate: 115200,
 	}
 
 	ports, err := enumerator.GetDetailedPortsList()
@@ -88,7 +88,7 @@ func run() {
 		}
 
 		stringData := string(buff[:n])
-		//fmt.Printf("%v", stringData)
+		fmt.Printf("%v", stringData)
 		if strings.Contains(stringData, "\n") {
 
 			newLineSplitParts := strings.Split(stringData, "\n")
@@ -105,10 +105,19 @@ func run() {
 
 }
 func HandleSerialOutput(dataLine string) error {
-	fmt.Printf("Handling %s", dataLine)
 	if dataLine == "" {
 		return fmt.Errorf("dataline is empty. %s", dataLine)
 	}
-	fmt.Println(dataLine)
+	dataFile, err := os.Create(runningConfig.Location.OutputFile)
+	if err != nil {
+		return fmt.Errorf("cannot create file: %v", err)
+	}
+	defer dataFile.Close()
+	_, err = dataFile.WriteString(dataLine)
+	if err != nil {
+		return fmt.Errorf("cannot write to file: %v", err)
+	}
+	dataFile.Sync()
+
 	return nil
 }

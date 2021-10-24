@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 Restart=always
-ExecStart=/usr/local/bin/cereal
+ExecStart=/usr/local/bin/cereal monitor --config /etc/cereal.yaml
 
 [Install]
 WantedBy=multi-user.target
